@@ -2605,16 +2605,16 @@
 
         <section title="Output Formatting" anchor="output">
             <t>
-                JSON Schema is defined to be platform-independent.  As such, to increase compatibility
+                JSON Schema is defined to be platform-independent. As such, to increase compatibility
                 across platforms, implementations SHOULD conform to a standard validation output
-                format.  This section describes the minimum requirements that consumers will need to
+                format. This section describes the minimum requirements that consumers will need to
                 properly interpret validation results.
             </t>
 
             <section title="Format">
                 <t>
                     JSON Schema output is defined using the JSON Schema data instance model as described
-                    in section 4.2.1.  Implementations MAY deviate from this as supported by their
+                    in section 4.2.1. Implementations MAY deviate from this as supported by their
                     specific languages and platforms, however it is RECOMMENDED that the output be
                     convertible to the JSON format defined herein via serialization or other means.
                 </t>
@@ -2622,7 +2622,7 @@
 
             <section title="Output Formats">
                 <t>
-                    This specification defines four output formats.  See the "Output Structure"
+                    This specification defines six output formats.  See the "Output Structure"
                     section for the requirements of each format.
                     <list>
                         <t>
@@ -2633,17 +2633,25 @@
                             Basic - Provides validation information in a flat list structure.
                         </t>
                         <t>
-                            Detailed - Provides validation information in a condensed hierarchical
-                            structure based on the structure of the schema.
+                            Detailed-Schema - Provides validation information in a condensed
+                            hierarchical structure based on the structure of the schema.
                         </t>
                         <t>
-                            Verbose - Provides validation information in an uncondensed hierarchical
-                            structure that matches the exact structure of the schema.
+                            Detailed-Instance - Provides validation information in a condensed
+                            hierarchical structure based on the structure of the instance.
+                        </t>
+                        <t>
+                            Verbose-Schema - Provides validation information in an uncondensed
+                            hierarchical structure that matches the exact structure of the schema.
+                        </t>
+                        <t>
+                            Verbose-Instance - Provides validation information in an uncondensed
+                            hierarchical structure that matches the exact structure of the instance.
                         </t>
                     </list>
-                    An implementation SHOULD provide at least one of the "flag", "basic", or "detailed"
-                    format and MAY provide the "verbose" format.  If it provides one or more of the
-                    "detailed" or "verbose" formats, it MUST also provide the "flag" format.
+                    An implementation SHOULD provide at least one of the "flag" or "basic" formats,
+                    and MAY provide one or more of the "detailed" or "verbose" formats. If it provides one
+                    or more of the "detailed" or "verbose" formats, it MUST also provide the "flag" format.
                     Implementations SHOULD specify in their documentation which formats they support.
                 </t>
 
@@ -2652,7 +2660,7 @@
             <section title="Minimum Information">
                 <t>
                     Beyond the simplistic "flag" output, additional information is useful to aid in
-                    debugging a schema or instance.  Each sub-result SHOULD contain the information
+                    debugging a schema or instance. Each sub-result SHOULD contain the information
                     contained within this section at a minimum.
                 </t>
                 <t>
@@ -2663,11 +2671,40 @@
                     Implementations MAY elect to provide additional information.
                 </t>
 
-                <section title="Keyword Relative Location">
+                <section title="Keyword">
+                    <t>
+                        The keyword that was evaluated for this output unit.
+                    </t>
+                    <t>
+                        This property MUST be included if an output unit was generated from a keyword.
+                        Some output units, such as those representing a new subschema after
+                        having dereferenced a "$ref" keyword, are transient and do not require
+                        this property.
+                    </t>
+                    <t>
+                        The JSON key for this information is "keyword".
+                    </t>
+                </section>
+
+                <section title="Dialect">
+                    <t>
+                        The URI ID of the vocabulary which defines the keyword which generated the 
+                        output unit.
+                    </t>
+                    <t>
+                        This property MUST be included if "keyword" is included.
+                    </t>
+                    <t>
+                        The JSON key for this information is "validationPath".
+                    </t>
+                </section>
+
+                <section title="Validation Path">
                     <t>
                         The relative location of the validating keyword that follows the validation
-                        path.  The value MUST be expressed as a JSON Pointer, and it MUST include
-                        any by-reference applicators such as "$ref" or "$dynamicRef".
+                        path. The value MUST be expressed as a JSON Pointer, it MUST include
+                        any by-reference applicators such as "$ref" or "$dynamicRef", and it MUST NOT
+                        be URI-encoded.
                     </t>
                     <figure>
                         <artwork>
@@ -2677,17 +2714,22 @@
                         </artwork>
                     </figure>
                     <t>
-                    Note that this pointer may not be resolvable by the normal JSON Pointer process
-                    due to the inclusion of these by-reference applicator keywords.
+                        This pointer might not be resolvable by the normal JSON Pointer process
+                        due to the inclusion of these by-reference applicator keywords.
                     </t>
                     <t>
-                        The JSON key for this information is "keywordLocation".
+                        The pointer MUST only include object keys and array indicies. Values
+                        are not to be included. This means that pointers that lead to a boolean-type
+                        schema are not to include any marker for that schema.
+                    </t>
+                    <t>
+                        The JSON key for this information is "validationPath".
                     </t>
                 </section>
 
-                <section title="Keyword Absolute Location">
+                <section title="Schema Location">
                     <t>
-                        The absolute, dereferenced location of the validating keyword.  The value MUST
+                        The absolute, dereferenced location of the validating keyword. The value MUST
                         be expressed as a full URI using the canonical URI of the relevant
                         schema object, and it MUST NOT include by-reference applicators
                         such as "$ref" or "$dynamicRef" as non-terminal path components.
@@ -2709,51 +2751,75 @@ https://example.com/schemas/common#/$defs/count/minimum
                         </artwork>
                     </figure>
                     <t>
-                        This information MAY be omitted only if either the dynamic scope did not pass
-                        over a reference or if the schema does not declare an absolute URI as its "$id".
+                        The pointer portion of the location MUST only include object keys and
+                        array indicies. Values are not to be included. This means that pointers
+                        that lead to a boolean-type schema are not to include any marker for that
+                        schema.
                     </t>
                     <t>
-                        The JSON key for this information is "absoluteKeywordLocation".
+                        The JSON key for this information is "schemaLocation".
                     </t>
                 </section>
 
                 <section title="Instance Location">
                     <t>
-                        The location of the JSON value within the instance being validated.  The
-                        value MUST be expressed as a JSON Pointer.
+                        The location of the JSON value within the instance being validated. The
+                        value MUST be expressed as a JSON Pointer, and it MUST NOT be URI-encoded.
                     </t>
                     <t>
                         The JSON key for this information is "instanceLocation".
                     </t>
                 </section>
 
-                <section title="Error or Annotation">
+                <section title="Error">
                     <t>
-                        The error or annotation that is produced by the validation.
+                        An error message that indicates the reason for a failed validation. This
+                        property is REQUIRED for nodes that indicate a failed validation.
                     </t>
                     <t>
-                        For errors, the specific wording for the message is not defined by this
-                        specification.  Implementations will need to provide this.
+                        The specific wording for the message is not defined by this specification.
+                        Implementations will need to provide this. Implementations SHOULD
+                        provide a mechanism to customize the error message.
                     </t>
                     <t>
-                        For annotations, each keyword that produces an annotation specifies its
-                        format.  By default, it is the keyword's value.
+                        The JSON key for this information is "error".
+                    </t>
+                </section>
+
+                <section title="Annotations">
+                    <t>
+                        Keywords can produce and collect annotations upon successful validation.
+                        In order to help identify data flow, this distinction must be maintained.
                     </t>
                     <t>
-                        The JSON key for failed validations is "error"; for successful validations
-                        it is "annotation".
+                        The JSON key for produced annotations is "annotation". The value for this
+                        field MUST be the annotation itself in JSON form. For keywords like "title",
+                        this will simply be the string; for keywords like "properties", this will be
+                        an array of strings.
+                    </t>
+                    <t>
+                        The JSON key for collected annotations is "collectedAnnotations". Keywords which
+                        behave as applicators pass on the annotations of their children. These annotations
+                        MUST be rendered under this property. The value for this property MUST be an
+                        object, the keys for which are the schema location of the keyword (i.e. the value
+                        of "schemaLocation") and the values are the annotation that the keyword produced.
+                    </t>
+                    <t>
+                        A keyword is not limited to one or the other. Some keywords, such as "properties"
+                        both produce and collect annotations. As such these properties are not
+                        mutually exclusive.
                     </t>
                 </section>
 
                 <section title="Nested Results">
                     <t>
-                        For the two hierarchical structures, this property will hold nested errors
-                        and annotations.
+                        For the hierarchical structures, this property will hold validation output units
+                        from either subschemas or child instance locations, depending on the organization
+                        required.
                     </t>
                     <t>
-                        The JSON key for nested results in failed validations is "errors"; for
-                        successful validations it is "annotations".  Note the plural forms, as
-                        a keyword with nested results can also have a local error or annotation.
+                        The JSON key for nested results is "nested". The value will depende on whether
+                        the output is organized by the schema or by the instance.
                     </t>
                 </section>
 
@@ -2761,21 +2827,17 @@ https://example.com/schemas/common#/$defs/count/minimum
 
             <section title="Output Structure">
                 <t>
-                    The output MUST be an object containing a boolean property named "valid".  When
+                    The output MUST be object containing a boolean property named "valid". When
                     additional information about the result is required, the output MUST also contain
-                    "errors" or "annotations" as described below.
+                    "nested" or "annotations" as described below.
                     <list>
                         <t>
                             "valid" - a boolean value indicating the overall validation success or
                             failure
                         </t>
                         <t>
-                            "errors" - the collection of errors or annotations produced by a failed
+                            "nested" - the collection of errors or annotations produced by a failed
                             validation
-                        </t>
-                        <t>
-                            "annotations" - the collection of errors or annotations produced by a
-                            successful validation
                         </t>
                     </list>
                     For these examples, the following schema and instance will be used.
