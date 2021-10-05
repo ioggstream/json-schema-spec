@@ -2774,12 +2774,14 @@ https://example.com/schemas/common#/$defs/count/minimum
                 <section title="Error">
                     <t>
                         An error message that indicates the reason for a failed validation. This
-                        property is REQUIRED for nodes that indicate a failed validation.
+                        property MUST NOT appear in nodes which represent a successful Validation
+                        result. This property is reserved for error message data, but it is not
+                        required.
                     </t>
                     <t>
                         The specific wording for the message is not defined by this specification.
-                        Implementations will need to provide this. Implementations SHOULD
-                        provide a mechanism to customize the error message.
+                        Implementations will need to provide this. Implementations which provide
+                        an error message SHOULD also provide a mechanism to customize it.
                     </t>
                     <t>
                         The JSON key for this information is "error".
@@ -2829,7 +2831,7 @@ https://example.com/schemas/common#/$defs/count/minimum
                 <t>
                     The output MUST be object containing a boolean property named "valid". When
                     additional information about the result is required, the output MUST also contain
-                    "nested" or "annotations" as described below.
+                    "nested" as described below.
                     <list>
                         <t>
                             "valid" - a boolean value indicating the overall validation success or
@@ -2840,7 +2842,29 @@ https://example.com/schemas/common#/$defs/count/minimum
                             validation
                         </t>
                     </list>
-                    For these examples, the following schema and instance will be used.
+                </t>
+                <t>
+                    The hierarchical structures are based on the can be more readable for
+                    both humans and machines.  Having the structure organized this way
+                    makes associations between the errors more apparent.  For example, the
+                    fact that the missing "y" property and the extra "z" property both
+                    stem from the same location in the instance is not immediately obvious
+                    in the "basic" structure. In a hierarchy, the correlation is more
+                    easily identified.
+                </t>
+                <t>
+                    The schema-based structure is most useful when focusing on the
+                    schema itself. This output structure is condensed but still following
+                    the basic structure of the schema.
+                </t>
+                <t>
+                    The instance-based structure is most useful once the schema has been
+                    defined.  Because it focus on the data being validated, it can help
+                    identify root causes for unexpected results.
+                </t>
+                <t>
+                    For the examples included within this specification, the following
+                    schema and instance will be used.
                 </t>
                 <figure>
                     <artwork>
@@ -2878,8 +2902,9 @@ https://example.com/schemas/common#/$defs/count/minimum
                     </artwork>
                 </figure>
                 <t>
-                    This instance will fail validation and produce errors, but it's trivial to deduce
-                    examples for passing schemas that produce annotations.
+                    This instance will fail validation and produce errors.  The "verbose" hierarchical
+                    examples also contain places where annotations are collected.  A specific example
+                    of this is not given in this text.
                 </t>
                 <t>
                     Specifically, the errors it will produce are:
@@ -2895,9 +2920,8 @@ https://example.com/schemas/common#/$defs/count/minimum
                         </t>
                     </list>
                     Note that the error message wording as depicted in these examples is not a
-                    requirement of this specification.  Implementations SHOULD craft error messages
-                    tailored for their audience or provide a templating mechanism that allows their
-                    users to craft their own messages.
+                    requirement of this specification. This remains a responsibility of the
+                    implementation.
                 </t>
 
                 <section title="Flag">
@@ -2926,42 +2950,45 @@ https://example.com/schemas/common#/$defs/count/minimum
 
                 <section title="Basic">
                     <t>
-                        The "Basic" structure is a flat list of output units.
+                        The "basic" structure is a flat list of output units, contained
+                        within a single top-level output unit.  The units in the list are
+                        what would be considered terminal nodes in the "verbal" format.
+                        Only the nodes which generate errors or annotations are included
+                        in this format.
                     </t>
                     <figure>
                         <artwork>
 <![CDATA[
 {
   "valid": false,
-  "errors": [
+  "validationPath": "",
+  "schemaLocation": "https://example.com/polygon#",
+  "instanceLocation": "",
+  "nested": [
     {
-      "keywordLocation": "",
-      "instanceLocation": "",
-      "error": "A subschema had errors."
-    },
-    {
-      "keywordLocation": "/items/$ref",
-      "absoluteKeywordLocation":
-        "https://example.com/polygon#/$defs/point",
-      "instanceLocation": "/1",
-      "error": "A subschema had errors."
-    },
-    {
-      "keywordLocation": "/items/$ref/required",
-      "absoluteKeywordLocation":
-        "https://example.com/polygon#/$defs/point/required",
+      "valid": false,
+      "keyword": "required",
+      "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
+      "validationPath": "/items/$ref/required",
+      "schemaLocation": "https://example.com/polygon#/$defs/point/required",
       "instanceLocation": "/1",
       "error": "Required property 'y' not found."
     },
     {
-      "keywordLocation": "/items/$ref/additionalProperties",
-      "absoluteKeywordLocation":
-        "https://example.com/polygon#/$defs/point/additionalProperties",
+      "valid": false,
+      "keyword": "additionalProperties",
+      "dialect": "https://json-schema.org/draft/2020-12/vocab/applicator",
+      "validationPath": "/items/$ref/additionalProperties",
+      "schemaLocation": "https://example.com/polygon#/$defs/point/additionalProperties",
       "instanceLocation": "/1/z",
       "error": "Additional property 'z' found but was invalid."
     },
     {
-      "keywordLocation": "/minItems",
+      "valid": false,
+      "keyword": "minItems",
+      "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
+      "validationPath": "/minItems",
+      "schemaLocation": "/minItems",
       "instanceLocation": "",
       "error": "Expected at least 3 items but found 2"
     }
@@ -2974,57 +3001,56 @@ https://example.com/schemas/common#/$defs/count/minimum
 
                 <section title="Detailed">
                     <t>
-                        The "Detailed" structure is based on the schema and can be more readable
-                        for both humans and machines.  Having the structure organized this way makes
-                        associations between the errors more apparent.  For example, the fact that
-                        the missing "y" property and the extra "z" property both stem from the same
-                        location in the instance is not immediately obvious in the "Basic" structure.
-                        In a hierarchy, the correlation is more easily identified.
-                    </t>
-                    <t>
-                        The following rules govern the construction of the results object:
+                        The "detailed" structures can be constructed by starting with the verbose
+                        form and applying the following rules:
                         <list>
                             <t>
-                                All applicator keywords ("*Of", "$ref", "if"/"then"/"else", etc.) require
-                                a node.
+                                If an output unit's validation result does not match its
+                                parent's validation result, it is removed, along with its
+                                children, except for keywords which explicitly define
+                                otherwise.
                             </t>
                             <t>
-                                Nodes that have no children are removed.
-                            </t>
-                            <t>
-                                Nodes that have a single child are replaced by the child.
+                                Single-node subtrees are collapsed into the terminal node.
                             </t>
                         </list>
-                        Branch nodes do not require an error message or an annotation.
                     </t>
-                    <figure>
-                        <artwork>
+                    <section title="Schema-structured">
+                        <t>
+                            For this format, "nested" is an array containing output elements of subschemas.
+                        </t>
+                        <figure>
+                            <artwork>
 <![CDATA[
 {
   "valid": false,
-  "keywordLocation": "",
+  "validationPath": "",
+  "schemaLocation": "https://example.com/polygon#",
   "instanceLocation": "",
-  "errors": [
+  "nested": [
     {
       "valid": false,
-      "keywordLocation": "/items/$ref",
-      "absoluteKeywordLocation":
-        "https://example.com/polygon#/$defs/point",
+      "keyword": "$ref",
+      "dialect": "https://json-schema.org/draft/2020-12/vocab/core",
+      "validationPath": "/items/$ref",
+      "schemaLocation": "https://example.com/polygon#/$defs/point",
       "instanceLocation": "/1",
-      "errors": [
+      "nested": [
         {
           "valid": false,
-          "keywordLocation": "/items/$ref/required",
-          "absoluteKeywordLocation":
-            "https://example.com/polygon#/$defs/point/required",
+          "keyword": "required",
+          "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
+          "validationPath": "/items/$ref/required",
+          "schemaLocation": "https://example.com/polygon#/$defs/point/required",
           "instanceLocation": "/1",
           "error": "Required property 'y' not found."
         },
         {
           "valid": false,
-          "keywordLocation": "/items/$ref/additionalProperties",
-          "absoluteKeywordLocation":
-            "https://example.com/polygon#/$defs/point/additionalProperties",
+          "keyword": "additionalProperties",
+          "dialect": "https://json-schema.org/draft/2020-12/vocab/applicator",
+          "validationPath": "/items/$ref/additionalProperties",
+          "schemaLocation": "https://example.com/polygon#/$defs/point/additionalProperties",
           "instanceLocation": "/1/z",
           "error": "Additional property 'z' found but was invalid."
         }
@@ -3032,96 +3058,122 @@ https://example.com/schemas/common#/$defs/count/minimum
     },
     {
       "valid": false,
-      "keywordLocation": "/minItems",
+      "keyword": "minItems",
+      "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
+      "validationPath": "/minItems",
+      "schemaLocation": "/minItems",
       "instanceLocation": "",
       "error": "Expected at least 3 items but found 2"
     }
   ]
 }
 ]]>
-                        </artwork>
-                    </figure>
+                            </artwork>
+                        </figure>
+                    </section>
+
+                    <section title="Instance-structured">
+                        <t>
+                            For this format, "nested" is an object. The keys are JSON Pointers
+                            indicating the instance location; the values are truncated output units containing
+                            only the following values.
+                        </t>
+                        <list>
+                            <t>
+                                "valid" - the overall validation result for the location.
+                            </t>
+                            <t>
+                                "results" - An array of the output units that apply directly to this location.
+                            </t>
+                            <t>
+                                "nested" - An object that meets the requirements of this section, built of the
+                                output units produced by validations for child nodes.
+                            </t>
+                        </list>
+                        <figure>
+                            <artwork>
+<![CDATA[
+{
+  "valid": false,
+  "validationPath": "",
+  "schemaLocation": "https://example.com/polygon#",
+  "instanceLocation": "",
+  "results": [
+    {
+      "valid": false,
+      "keyword": "minItems",
+      "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
+      "validationPath": "#/minItems",
+      "error": "Value has fewer than 3 items"
+    }
+  ],
+  "nested": {
+    "/1": {
+      "valid": false,
+      "results": [
+        {
+          "valid": false,
+          "keyword": "required",
+          "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
+          "validationPath": "/items/$ref/required",
+          "schemaLocation": "https://example.com/polygon#/$defs/point/required",
+          "error": "Required properties [y] were not present"
+        }
+      ],
+      "nested": {
+        "/1/z": {
+          "valid": false,
+          "results": [
+            {
+              "valid": false,
+              "keyword": "additionalProperties",
+              "dialect": "https://json-schema.org/draft/2020-12/vocab/applicator",
+              "validationPath": "/items/$ref/additionalProperties",
+              "schemaLocation": "https://example.com/polygon#/$defs/point/additionalProperties/$false",
+              "error": "All values fail against the false schema"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+]]>
+                            </artwork>
+                        </figure>
+                    </section>
                 </section>
 
                 <section title="Verbose">
                     <t>
-                        The "Verbose" structure is a fully realized hierarchy that exactly matches
-                        that of the schema.  This structure has applications in form generation and
-                        validation where the error's location is important.
+                        The "verbose" structure is a fully realized hierarchy that exactly matches
+                        that of either the schema or the instance. This structure has applications
+                        in form generation and validation where the error's location is important.
                     </t>
                     <t>
-                        The primary difference between this and the "Detailed" structure is that
-                        all results are returned.  This includes sub-schema validation results that
+                        The primary difference between these and the "detailed" structures is that
+                        all results are returned. This includes sub-schema validation results that
                         would otherwise be removed (e.g. annotations for failed validations,
-                        successful validations inside a `not` keyword, etc.).  Because of this, it
-                        is RECOMMENDED that each node also carry a `valid` property to indicate the
-                        validation result for that node.
+                        successful validations inside a "not" keyword, etc.).
                     </t>
                     <t>
-                        Because this output structure can be quite large, a smaller example is given
-                        here for brevity.  The URI of the full output structure of the example above is:
-                        <eref target="https://json-schema.org/draft/2020-12/output/verbose-example"/>.
+                        Because this output structure can be quite large, the expected output for
+                        these formats can be found at the URLs below:
+                        <list>
+                            <t>
+                                Schema-structured: <eref target="https://json-schema.org/draft/2020-12/output/verbose-schema-example"/>.
+                            </t>
+                            <t>
+                                Instance-structured: <eref target="https://json-schema.org/draft/2020-12/output/verbose-instance-example"/>.
+                            </t>
+                        </list>
                     </t>
-                    <figure>
-                        <artwork>
-<![CDATA[
-// schema
-{
-  "$id": "https://example.com/polygon",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "properties": {
-    "validProp": true,
-  },
-  "additionalProperties": false
-}
-
-// instance
-{
-  "validProp": 5,
-  "disallowedProp": "value"
-}
-
-// result
-{
-  "valid": false,
-  "keywordLocation": "",
-  "instanceLocation": "",
-  "errors": [
-    {
-      "valid": true,
-      "keywordLocation": "/type",
-      "instanceLocation": ""
-    },
-    {
-      "valid": true,
-      "keywordLocation": "/properties",
-      "instanceLocation": ""
-    },
-    {
-      "valid": false,
-      "keywordLocation": "/additionalProperties",
-      "instanceLocation": "",
-      "errors": [
-        {
-          "valid": false,
-          "keywordLocation": "/additionalProperties",
-          "instanceLocation": "/disallowedProp",
-          "error": "Additional property 'disallowedProp' found but was invalid."
-        }
-      ]
-    }
-  ]
-}
-]]>
-                        </artwork>
-                    </figure>
                 </section>
 
                 <section title="Output validation schemas">
                     <t>
                         For convenience, JSON Schema has been provided to validate output generated
-                        by implementations.  Its URI is:
+                        by implementations. Its URI is:
                         <eref target="https://json-schema.org/draft/2020-12/output/schema"/>.
                     </t>
                 </section>
