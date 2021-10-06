@@ -2661,10 +2661,12 @@
                 <t>
                     It is understood that this output is not completely compatible with
                     formats specified in previous versions of this specification. Implementations
-                    are REQUIRED to support the output format from of the latest version of
-                    this specification. Supporting output formats specified in previous versions
-                    is OPTIONAL, even when validating schemas declaring a "$schema" keyword
-                    for previous versions.
+                    SHOULD provide the output format from of the latest version of this specification
+                    that is supported. Supporting output formats specified in previous versions is
+                    OPTIONAL, even when validating schemas declaring a "$schema" keyword for previous
+                    versions.  For example, when processing a schema that declares draft 2019-09 in
+                    its "$schema" keyword, the output format should still conform to this version
+                    of the specification.
                     <!-- The wording here is weird, but I think it's necessary. I'm trying
                          to avoid sounding redundant/repetive. -->
                 </t>
