@@ -2649,9 +2649,26 @@
                             hierarchical structure that matches the exact structure of the instance.
                         </t>
                     </list>
-                    An implementation SHOULD provide at least one of the "flag" or "basic" formats,
-                    and MAY provide one or more of the "detailed" or "verbose" formats. If it provides one
-                    or more of the "detailed" or "verbose" formats, it MUST also provide the "flag" format.
+                    An implementation MUST provide the "flag" format and SHOULD provide at least one
+                    format which gives additional information.
+                    <cref>
+                        Implementations are encouraged to provide as many output formats as
+                        possible. If an implementation must decide between supporting either
+                        the schema- or instanced-based structure (but not both), it is expected
+                        that the implementation choose based on the needs of its user base.
+                    </cref>
+                </t>
+                <t>
+                    It is understood that this output is not completely compatible with
+                    formats specified in previous versions of this specification. Implementations
+                    are REQUIRED to support the output format from of the latest version of
+                    this specification. Supporting output formats specified in previous versions
+                    is OPTIONAL, even when validating schemas declaring a "$schema" keyword
+                    for previous versions.
+                    <!-- The wording here is weird, but I think it's necessary. I'm trying
+                         to avoid sounding redundant/repetive. -->
+                </t>
+                <t>
                     Implementations SHOULD specify in their documentation which formats they support.
                 </t>
 
