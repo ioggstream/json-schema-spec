@@ -1,23 +1,28 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://json-schema.org/draft/2020-12/output/schema",
+  "$schema": "https://json-schema.org/draft/next/schema",
+  "$id": "https://json-schema.org/draft/next/output/schema",
   "description": "A schema that validates the minimum requirements for validation output",
 
   "anyOf": [
     { "$ref": "#/$defs/flag" },
     { "$ref": "#/$defs/basic" },
-    { "$ref": "#/$defs/detailed" },
-    { "$ref": "#/$defs/verbose" }
+    { "$ref": "#/$defs/schemaHierarchy" },
+    { "$ref": "#/$defs/instanceHierarchy" }
   ],
   "$defs": {
     "outputUnit":{
       "properties": {
         "valid": { "type": "boolean" },
-        "keywordLocation": {
+        "keyword": { "type": "string" },
+        "dialect": {
+          "type": "string",
+          "format": "uri"
+        },
+        "validationPath": {
           "type": "string",
           "format": "json-pointer"
         },
-        "absoluteKeywordLocation": {
+        "schemaLocation": {
           "type": "string",
           "format": "uri"
         },
@@ -28,69 +33,61 @@
         "error": {
           "type": "string"
         },
-        "errors": {
-          "$ref": "#/$defs/outputUnitArray"
-        },
-        "annotations": {
-          "$ref": "#/$defs/outputUnitArray"
+        "annotation": true,
+        "collectedAnnotations": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "format": "uri"
+          }
         }
       },
-      "required": [ "valid", "keywordLocation", "instanceLocation" ],
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "valid": { "const": false }
-            }
-          },
-          "then": {
-            "anyOf": [
-              {
-                "required": [ "error" ]
-              },
-              {
-                "required": [ "errors" ]
-              }
-            ]
-          }
-        },
-        {
-          "if": {
-            "anyOf": [
-              {
-                "properties": {
-                  "keywordLocation": {
-                    "pattern": "/\\$ref/"
-                  }
-                }
-              },
-              {
-                "properties": {
-                  "keywordLocation": {
-                    "pattern": "/\\$dynamicRef/"
-                  }
-                }
-              }
-            ]
-          },
-          "then": {
-            "required": [ "absoluteKeywordLocation" ]
-          }
+      "required": [ "valid", "validationPath", "schemaLocation", "instanceLocation" ],
+      "if": { "properties": { "valid": { "const": true } } },
+      "then": { "properties": { "error": false } },
+      "else": {
+        "properties": {
+          "annotation": false,
+          "collectedAnnotations": false
         }
-      ]
+      }
     },
-    "outputUnitArray": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/outputUnit" }
+    "schemaStructure": {
+      "$ref": "#/$defs/outputUnit",
+      "properties": {
+        "nested": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/schemaStructure" }
+        }
+      }
     },
+    "instanceStructure": {
+      "$ref": "#/$defs/outputUnit",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/outputUnit" }
+        },
+        "nested": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "format": "json-pointer"
+          },
+          "additionalProperties": { "$ref": "#/$defs/instanceStructure" }
+        }
+      }
+    },
+    
     "flag": {
       "properties": {
         "valid": { "type": "boolean" }
       },
-      "required": [ "valid" ]
+      "required": [ "valid" ],
+      "additionalProperties": false
     },
     "basic": { "$ref": "#/$defs/outputUnit" },
-    "detailed": { "$ref": "#/$defs/outputUnit" },
-    "verbose": { "$ref": "#/$defs/outputUnit" }
+    "schemaHierarchy": { "$ref": "#/$defs/schemaStructure" },
+    "instanceHierarchy": { "$ref": "#/$defs/instanceStructure" }
   }
 }
