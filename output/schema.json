@@ -18,7 +18,7 @@
           "type": "string",
           "format": "uri"
         },
-        "validationPath": {
+        "evaluationPath": {
           "type": "string",
           "format": "json-pointer"
         },
@@ -42,7 +42,7 @@
           }
         }
       },
-      "required": [ "valid", "validationPath", "schemaLocation", "instanceLocation" ],
+      "required": [ "valid", "evaluationPath", "schemaLocation", "instanceLocation" ],
       "if": { "properties": { "valid": { "const": true } } },
       "then": { "properties": { "error": false } },
       "else": {

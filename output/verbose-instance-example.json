@@ -1,6 +1,6 @@
 {
   "valid": false,
-  "validationPath": "",
+  "evaluationPath": "",
   "schemaLocation": "https://example.com/polygon#",
   "instanceLocation": "",
   "results": [
@@ -8,21 +8,21 @@
       "valid": true,
       "keyword": "type",
       "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-      "validationPath": "#/type",
+      "evaluationPath": "#/type",
       "schemaLocation": "https://example.com/polygon#/type"
     },
     {
       "valid": false,
       "keyword": "minItems",
       "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-      "validationPath": "#/minItems",
+      "evaluationPath": "#/minItems",
       "error": "Value has fewer than 3 items"
     },
     {
       "valid": false,
       "keyword": "items",
       "dialect": "https://json-schema.org/draft/2020-12/vocab/applicators",
-      "validationPath": "#/items"
+      "evaluationPath": "#/items"
     }
   ],
   "nested": {
@@ -33,28 +33,28 @@
           "valid": true,
           "keyword": "items",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/applicator",
-          "validationPath": "/items",
+          "evaluationPath": "/items",
           "schemaLocation": "https://example.com/polygon#/items"
         },
         {
           "valid": true,
           "keyword": "$ref",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/core",
-          "validationPath": "/items/$ref",
+          "evaluationPath": "/items/$ref",
           "schemaLocation": "https://example.com/polygon#/items/$ref"
         },
         {
           "valid": true,
           "keyword": "type",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-          "validationPath": "/items/$ref/type",
+          "evaluationPath": "/items/$ref/type",
           "schemaLocation": "https://example.com/polygon#/$defs/point/type"
         },
         {
           "valid": true,
           "keyword": "properties",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/applicator",
-          "validationPath": "/items/$ref/properties",
+          "evaluationPath": "/items/$ref/properties",
           "schemaLocation": "https://example.com/polygon#/$defs/point/properties",
           "annotation": [
             "x",
@@ -69,7 +69,7 @@
           "valid": true,
           "keyword": "additionalProperties",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/applicator",
-          "validationPath": "/items/$ref/additionalProperties",
+          "evaluationPath": "/items/$ref/additionalProperties",
           "schemaLocation": "https://example.com/polygon#/$defs/point/additionalProperties",
           "annotation": [],
           "collectedAnnotations": {
@@ -83,7 +83,7 @@
           "valid": true,
           "keyword": "required",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-          "validationPath": "/items/$ref/required",
+          "evaluationPath": "/items/$ref/required",
           "schemaLocation": "https://example.com/polygon#/$defs/point/required",
           "collectedAnnotations": {
             "https://example.com/polygon#/$defs/point/properties": [
@@ -100,21 +100,21 @@
           "results": [
             {
               "valid": true,
-              "validationPath": "/items/$ref/properties/x",
+              "evaluationPath": "/items/$ref/properties/x",
               "schemaLocation": "https://example.com/polygon#/$defs/point/properties/x"
             },
             {
               "valid": true,
               "keyword": "type",
               "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-              "validationPath": "/items/$ref/properties/x/type",
+              "evaluationPath": "/items/$ref/properties/x/type",
               "schemaLocation": "https://example.com/polygon#/$defs/point/properties/x/type"
             },
             {
               "valid": true,
               "keyword": "description",
               "dialect": "https://json-schema.org/draft/2020-12/vocab/meta-data",
-              "validationPath": "/items/$ref/properties/x/description",
+              "evaluationPath": "/items/$ref/properties/x/description",
               "schemaLocation": "https://example.com/polygon#/$defs/point/properties/x/description",
               "annotation": "x coordinate"
             }
@@ -125,21 +125,21 @@
           "results": [
             {
               "valid": true,
-              "validationPath": "/items/$ref/properties/y",
+              "evaluationPath": "/items/$ref/properties/y",
               "schemaLocation": "https://example.com/polygon#/$defs/point/properties/y"
             },
             {
               "valid": true,
               "keyword": "type",
               "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-              "validationPath": "/items/$ref/properties/y/type",
+              "evaluationPath": "/items/$ref/properties/y/type",
               "schemaLocation": "https://example.com/polygon#/$defs/point/properties/y/type"
             },
             {
               "valid": true,
               "keyword": "description",
               "dialect": "https://json-schema.org/draft/2020-12/vocab/meta-data",
-              "validationPath": "/items/$ref/properties/y/description",
+              "evaluationPath": "/items/$ref/properties/y/description",
               "schemaLocation": "https://example.com/polygon#/$defs/point/properties/y/description",
               "annotation": "y coordinate"
             }
@@ -154,32 +154,32 @@
           "valid": false,
           "keyword": "items",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/applicator",
-          "validationPath": "/items"
+          "evaluationPath": "/items"
         },
         {
           "valid": false,
           "keyword": "$ref",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/core",
-          "validationPath": "/items/$ref",
+          "evaluationPath": "/items/$ref",
           "schemaLocation": "https://example.com/polygon#/items/$ref"
         },
         {
           "valid": false,
-          "validationPath": "/items/$ref",
+          "evaluationPath": "/items/$ref",
           "schemaLocation": "https://example.com/polygon#/$defs/point"
         },
         {
           "valid": true,
           "keyword": "type",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-          "validationPath": "/items/$ref/type",
+          "evaluationPath": "/items/$ref/type",
           "schemaLocation": "https://example.com/polygon#/$defs/point/type"
         },
         {
           "valid": true,
           "keyword": "properties",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/applicator",
-          "validationPath": "/items/$ref/properties",
+          "evaluationPath": "/items/$ref/properties",
           "schemaLocation": "https://example.com/polygon#/$defs/point/properties",
           "annotation": [
             "x"
@@ -192,14 +192,14 @@
           "valid": false,
           "keyword": "additionalProperties",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/applicator",
-          "validationPath": "/items/$ref/additionalProperties",
+          "evaluationPath": "/items/$ref/additionalProperties",
           "schemaLocation": "https://example.com/polygon#/$defs/point/additionalProperties"
         },
         {
           "valid": false,
           "keyword": "required",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-          "validationPath": "/items/$ref/required",
+          "evaluationPath": "/items/$ref/required",
           "schemaLocation": "https://example.com/polygon#/$defs/point/required",
           "error": "Required properties [y] were not present"
         }
@@ -210,21 +210,21 @@
           "results": [
             {
               "valid": true,
-              "validationPath": "/items/$ref/properties/x",
+              "evaluationPath": "/items/$ref/properties/x",
               "schemaLocation": "https://example.com/polygon#/$defs/point/properties/x"
             },
             {
               "valid": true,
               "keyword": "type",
               "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-              "validationPath": "/items/$ref/properties/x/type",
+              "evaluationPath": "/items/$ref/properties/x/type",
               "schemaLocation": "https://example.com/polygon#/$defs/point/properties/x/type"
             },
             {
               "valid": true,
               "keyword": "description",
               "dialect": "https://json-schema.org/draft/2020-12/vocab/meta-data",
-              "validationPath": "/items/$ref/properties/x/description",
+              "evaluationPath": "/items/$ref/properties/x/description",
               "schemaLocation": "https://example.com/polygon#/$defs/point/properties/x/description",
               "annotation": "x coordinate"
             }
@@ -235,7 +235,7 @@
           "results": [
             {
               "valid": false,
-              "validationPath": "/items/$ref/additionalProperties/$false",
+              "evaluationPath": "/items/$ref/additionalProperties/$false",
               "schemaLocation": "https://example.com/polygon#/$defs/point/additionalProperties/$false",
               "error": "All values fail against the false schema"
             }

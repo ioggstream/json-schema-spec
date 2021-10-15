@@ -2696,9 +2696,9 @@
                     </t>
                     <t>
                         This property MUST be included if an output unit was generated from a keyword.
-                        Some output units, such as those representing a new subschema after
-                        having dereferenced a "$ref" keyword, are transient and do not require
-                        this property.
+                        Some output units, such as boolean schemas or those representing a new
+                        subschema after having dereferenced a "$ref" keyword, are transient and
+                        do not require this property.
                     </t>
                     <t>
                         The JSON key for this information is "keyword".
@@ -2714,14 +2714,14 @@
                         This property MUST be included if "keyword" is included.
                     </t>
                     <t>
-                        The JSON key for this information is "validationPath".
+                        The JSON key for this information is "dialect".
                     </t>
                 </section>
 
-                <section title="Validation Path">
+                <section title="Evaluation Path">
                     <t>
-                        The relative location of the validating keyword that follows the validation
-                        path. The value MUST be expressed as a JSON Pointer, it MUST include
+                        Represents the sequence of keys and indices that are visited as evalation
+                        occurs. The value MUST be expressed as a JSON Pointer, it MUST include
                         any by-reference applicators such as "$ref" or "$dynamicRef", and it MUST NOT
                         be URI-encoded.
                     </t>
@@ -2742,7 +2742,10 @@
                         schema are not to include any marker for that schema.
                     </t>
                     <t>
-                        The JSON key for this information is "validationPath".
+                        This property SHOULD be included.
+                    </t>
+                    <t>
+                        The JSON key for this information is "evaluationPath".
                     </t>
                 </section>
 
@@ -2776,14 +2779,20 @@ https://example.com/schemas/common#/$defs/count/minimum
                         schema.
                     </t>
                     <t>
+                        This property is REQUIRED.
+                    </t>
+                    <t>
                         The JSON key for this information is "schemaLocation".
                     </t>
                 </section>
 
                 <section title="Instance Location">
                     <t>
-                        The location of the JSON value within the instance being validated. The
+                        The location of the JSON value within the instance being evaluated. The
                         value MUST be expressed as a JSON Pointer, and it MUST NOT be URI-encoded.
+                    </t>
+                    <t>
+                        This property is REQUIRED.
                     </t>
                     <t>
                         The JSON key for this information is "instanceLocation".
@@ -2793,7 +2802,7 @@ https://example.com/schemas/common#/$defs/count/minimum
                 <section title="Error">
                     <t>
                         An error message that indicates the reason for a failed validation. This
-                        property MUST NOT appear in nodes which represent a successful Validation
+                        property MUST NOT appear in nodes which represent a successful validation
                         result. This property is reserved for error message data, but it is not
                         required.
                     </t>
@@ -2980,7 +2989,7 @@ https://example.com/schemas/common#/$defs/count/minimum
 <![CDATA[
 {
   "valid": false,
-  "validationPath": "",
+  "evaluationPath": "",
   "schemaLocation": "https://example.com/polygon#",
   "instanceLocation": "",
   "nested": [
@@ -2988,7 +2997,7 @@ https://example.com/schemas/common#/$defs/count/minimum
       "valid": false,
       "keyword": "required",
       "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-      "validationPath": "/items/$ref/required",
+      "evaluationPath": "/items/$ref/required",
       "schemaLocation": "https://example.com/polygon#/$defs/point/required",
       "instanceLocation": "/1",
       "error": "Required property 'y' not found."
@@ -2997,7 +3006,7 @@ https://example.com/schemas/common#/$defs/count/minimum
       "valid": false,
       "keyword": "additionalProperties",
       "dialect": "https://json-schema.org/draft/2020-12/vocab/applicator",
-      "validationPath": "/items/$ref/additionalProperties",
+      "evaluationPath": "/items/$ref/additionalProperties",
       "schemaLocation": "https://example.com/polygon#/$defs/point/additionalProperties",
       "instanceLocation": "/1/z",
       "error": "Additional property 'z' found but was invalid."
@@ -3006,7 +3015,7 @@ https://example.com/schemas/common#/$defs/count/minimum
       "valid": false,
       "keyword": "minItems",
       "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-      "validationPath": "/minItems",
+      "evaluationPath": "/minItems",
       "schemaLocation": "/minItems",
       "instanceLocation": "",
       "error": "Expected at least 3 items but found 2"
@@ -3043,7 +3052,7 @@ https://example.com/schemas/common#/$defs/count/minimum
 <![CDATA[
 {
   "valid": false,
-  "validationPath": "",
+  "evaluationPath": "",
   "schemaLocation": "https://example.com/polygon#",
   "instanceLocation": "",
   "nested": [
@@ -3051,7 +3060,7 @@ https://example.com/schemas/common#/$defs/count/minimum
       "valid": false,
       "keyword": "$ref",
       "dialect": "https://json-schema.org/draft/2020-12/vocab/core",
-      "validationPath": "/items/$ref",
+      "evaluationPath": "/items/$ref",
       "schemaLocation": "https://example.com/polygon#/$defs/point",
       "instanceLocation": "/1",
       "nested": [
@@ -3059,7 +3068,7 @@ https://example.com/schemas/common#/$defs/count/minimum
           "valid": false,
           "keyword": "required",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-          "validationPath": "/items/$ref/required",
+          "evaluationPath": "/items/$ref/required",
           "schemaLocation": "https://example.com/polygon#/$defs/point/required",
           "instanceLocation": "/1",
           "error": "Required property 'y' not found."
@@ -3068,7 +3077,7 @@ https://example.com/schemas/common#/$defs/count/minimum
           "valid": false,
           "keyword": "additionalProperties",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/applicator",
-          "validationPath": "/items/$ref/additionalProperties",
+          "evaluationPath": "/items/$ref/additionalProperties",
           "schemaLocation": "https://example.com/polygon#/$defs/point/additionalProperties",
           "instanceLocation": "/1/z",
           "error": "Additional property 'z' found but was invalid."
@@ -3079,7 +3088,7 @@ https://example.com/schemas/common#/$defs/count/minimum
       "valid": false,
       "keyword": "minItems",
       "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-      "validationPath": "/minItems",
+      "evaluationPath": "/minItems",
       "schemaLocation": "/minItems",
       "instanceLocation": "",
       "error": "Expected at least 3 items but found 2"
@@ -3114,7 +3123,7 @@ https://example.com/schemas/common#/$defs/count/minimum
 <![CDATA[
 {
   "valid": false,
-  "validationPath": "",
+  "evaluationPath": "",
   "schemaLocation": "https://example.com/polygon#",
   "instanceLocation": "",
   "results": [
@@ -3122,7 +3131,7 @@ https://example.com/schemas/common#/$defs/count/minimum
       "valid": false,
       "keyword": "minItems",
       "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-      "validationPath": "#/minItems",
+      "evaluationPath": "#/minItems",
       "error": "Value has fewer than 3 items"
     }
   ],
@@ -3134,7 +3143,7 @@ https://example.com/schemas/common#/$defs/count/minimum
           "valid": false,
           "keyword": "required",
           "dialect": "https://json-schema.org/draft/2020-12/vocab/validation",
-          "validationPath": "/items/$ref/required",
+          "evaluationPath": "/items/$ref/required",
           "schemaLocation": "https://example.com/polygon#/$defs/point/required",
           "error": "Required properties [y] were not present"
         }
@@ -3147,7 +3156,7 @@ https://example.com/schemas/common#/$defs/count/minimum
               "valid": false,
               "keyword": "additionalProperties",
               "dialect": "https://json-schema.org/draft/2020-12/vocab/applicator",
-              "validationPath": "/items/$ref/additionalProperties",
+              "evaluationPath": "/items/$ref/additionalProperties",
               "schemaLocation": "https://example.com/polygon#/$defs/point/additionalProperties/$false",
               "error": "All values fail against the false schema"
             }
